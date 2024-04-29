@@ -120,14 +120,6 @@ ulay1 = unet.get_layer(index = 13)
 # Set weights for ulay1
 ulay1.set_weights([kernel_weights, bias_weights])
 
-def iou_coef(y_true, y_pred, smooth=1):
-    intersection = K.sum(K.abs(y_true * y_pred), axis=[1,2,3])
-    union = K.sum(y_true,[1,2,3]) + K.sum(y_pred,[1,2,3]) - intersection
-    iou = K.mean((intersection + smooth) / (union + smooth), axis=0)
-    return iou
-
-# Compile the model with the IoU metric
-unet.compile(optimizer=Adam(learning_rate=lr), loss="binary_crossentropy", metrics=["accuracy", iou_coef])
 
 
 # %%
@@ -136,29 +128,20 @@ unet.compile(optimizer=Adam(learning_rate=lr), loss="binary_crossentropy", metri
 # test_con.set_weights(lay1w)
 
 # %%
-#unet.summary()
+unet.summary()
 
 # %%
-#eff.summary()
+eff.summary()
 
 # %%
 ### Define and compile model
 
-# unet = Model(inputs=[inp], outputs = [o3], name="Unet_for_ship")
-# unet.compile(optimizer = Adam(learning_rate=lr), loss="binary_crossentropy", metrics = ["accuracy"])
+unet = Model(inputs=[inp], outputs = [o3], name="Unet_for_ship")
+unet.compile(optimizer = Adam(learning_rate=lr), loss="binary_crossentropy", metrics = ["accuracy"])
 
-history = unet.fit(train_data, train_labels, epochs=EPOCHS, batch_size=batch_size, validation_data=(val_data, val_labels))
-
-# Plot training history
-plt.plot(history.history['loss'], label='Training Loss')
-plt.plot(history.history['val_loss'], label='Validation Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.legend()
-plt.show()
 
 # %%
-# for layers in unet.layers:
-#     print(layers)
+for layers in unet.layers:
+    print(layers)
 
 # %%
